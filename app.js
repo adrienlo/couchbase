@@ -1,12 +1,18 @@
+/*
+ * Dependencies
+ */
 var config = require('./config'),
-	express = require('express'),
+
 	bodyParser = require('body-parser'),
+	express = require('express'),
+	couchbase = require('couchbase'),
 	router = express.Router(),
 	routes,
-	couchbase = require('couchbase'),
 	app = express(),
-	bucket = (new couchbase.Cluster(config.database.server)).openBucket(config.database.bucket);
+	bucket;
 
+// Connect to couchbase
+bucket = (new couchbase.Cluster(config.database.server)).openBucket(config.database.bucket);
 routes = require('./routes')(router, bucket);
 
 app.use(bodyParser.json());
@@ -15,6 +21,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Start all routes with /api
 app.use('/api', router);
 
-app.listen(3000, function () {
-    console.log('couchbase api running...');
+app.listen(config.server.port, config.server.ip, ()=> {
+	console.log(`couchbase api running... ${config.server.ip}:${config.server.port}`);
 });

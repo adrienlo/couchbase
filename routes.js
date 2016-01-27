@@ -1,33 +1,44 @@
-var uuid = require('uuid');
+var uuid = require('uuid')
+	Beer = require('./beer');
 
-var routes = function(router, bucket) {
-	router.get('/', function(req, response) {
+var routes = (router, bucket) => {
+	function returnError(response, message) {
+		return response.status(400).send({ error: 'error', message: message });
+	}
+
+	router.get('/', (req, response) => {
 		response.json({ message: 'welcome to the couchbase api.' });
 	});
 
 	router.route('/foo')
-		.post(function(req, response) {
-			bucket.insert(uuid.v4(), req.body, function(err, data) {
-				response.json({ message: 'insert successful' });
-			});
-		})
-		.get(function(req, response) {
-			if(!req.body.id) {
-				return returnError(response, 'error', 'ID is required.');
+		.post((req, response) => {
+			if(!req.body.description) {
+				return returnError(response, 'Description is required.');
 			}
 
-			bucket.get(req.body.id, function(err, data) {
+			var beer = Beer(uuid.v4(), req.body.description);
+
+			bucket.insert(beer.id, beer, (err, data) => {
+					response.json({ message: 'insert successful' });
+				});
+		})
+		.get((req, response) => {
+			if(!req.body.id) {
+				return returnError(response, 'ID is required.');
+			}
+
+			bucket.get(req.body.id, (err, data) => {
 				response.json(data.value);
 			});
 		});
 
 	router.route('/foo/:id')
-		.get(function(req, response) {
+		.get((req, response) => {
 			if(!req.params.id) {
-				return returnError(response, 'error', 'ID is required.');
+				return returnError(response, 'ID is required.');
 			}
 
-			bucket.get(req.params.id, function(err, data) {
+			bucket.get(req.params.id, (err, data) => {
 				response.json(data.value);
 			});
 		})
