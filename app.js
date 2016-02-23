@@ -1,19 +1,14 @@
 /*
  * Dependencies
  */
-var config = require('./config'),
-
-	bodyParser = require('body-parser'),
-	express = require('express'),
-	couchbase = require('couchbase'),
-	router = express.Router(),
-	routes,
-	app = express(),
-	bucket;
-
-// Connect to couchbase
-bucket = (new couchbase.Cluster(config.database.server)).openBucket(config.database.bucket);
-routes = require('./routes')(router, bucket);
+var config = require('./config');
+var bodyParser = require('body-parser');
+var express = require('express');
+var couchbase = require('couchbase');
+var router = express.Router();
+var app = express();
+var bucket = (new couchbase.Cluster(config.database.server)).openBucket(config.database.bucket);
+var routes = require('./routes')(router, bucket);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
