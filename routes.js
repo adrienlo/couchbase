@@ -1,7 +1,7 @@
-var uuid = require('uuid')
-	Beer = require('./beer');
-
 var routes = (router, bucket) => {
+	var uuid = require('uuid')
+		Beer = require('./beer');
+
 	function returnError(response, message) {
 		return response.status(400).send({ error: 'error', message: message });
 	}
